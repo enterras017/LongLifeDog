@@ -9,7 +9,7 @@ import LongDog from './src/components/LongDog';
 function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f0f8ff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#87CEEB" />
       <LongDog />
     </SafeAreaView>
   );
@@ -18,7 +18,7 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
+    backgroundColor: '#87CEEB', // 水色
   },
 });
 

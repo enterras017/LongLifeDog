@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { LongDogHead } from './LongDogHead';
 import { LongDogBody } from './LongDogBody';
@@ -16,14 +17,46 @@ const LongDog: React.FC = () => {
   const [remainingFeeds, setRemainingFeeds] = useState(100);
   const [lastFeedDate, setLastFeedDate] = useState<string | null>(null);
   const [segmentIncrement, setSegmentIncrement] = useState(10); // 検証用: セグメント増加量
+  const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const scrollViewRef = useRef<ScrollView>(null);
+  
+  // 安定したセグメント配列をメモ化
+  const bodySegments = React.useMemo(() => {
+    return Array.from({ length: bodyCount }, (_, i) => i);
+  }, [bodyCount]);
 
   const handleFeed = () => {
     if (remainingFeeds > 0) {
+      // 表情を笑顔に変更
+      setDogExpression('smile');
+      
+      // 一度にセグメントを追加
       setBodyCount(prev => prev + segmentIncrement);
       setFeedCount(prev => prev + 1);
       setRemainingFeeds(prev => prev - 1);
+      
+      // フェードアニメーション
+      Animated.sequence([
+        Animated.timing(fadeAnim, { 
+          toValue: 0.8, 
+          duration: 150, 
+          useNativeDriver: true 
+        }),
+        Animated.timing(fadeAnim, { 
+          toValue: 1, 
+          duration: 150, 
+          useNativeDriver: true 
+        }),
+      ]).start();
+      
       const now = new Date();
       setLastFeedDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`);
+      
+      // 1.5秒後に通常表情に戻す
+      setTimeout(() => {
+        setDogExpression('normal');
+      }, 1500);
     }
   };
 
@@ -32,6 +65,7 @@ const LongDog: React.FC = () => {
     setFeedCount(0);
     setRemainingFeeds(100);
     setLastFeedDate(null);
+    setDogExpression('normal'); // 表情も通常に戻す
   };
 
   const getDogLength = () => {
@@ -44,20 +78,18 @@ const LongDog: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.statusBar} />
       <Text style={styles.title}>ながいぬのいる生活</Text>
       
       <ScrollView 
+        ref={scrollViewRef}
         horizontal 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsHorizontalScrollIndicator={false}
       >
         <View style={styles.dogContainer}>
-          <LongDogHead />
-          {Array.from({ length: bodyCount }).map((_, index) => (
-            <LongDogBody key={index} />
-          ))}
+          <LongDogHead expression={dogExpression} fadeAnim={fadeAnim} />
+          <LongDogBody totalWidth={bodyCount} />
           <LongDogTail />
         </View>
       </ScrollView>
@@ -131,17 +163,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white', // 全体の背景は白
     alignItems: 'center',
-    paddingTop: 60, // ステータスバー分の余白
+    paddingTop: 20, // 余白調整
     paddingHorizontal: 20,
     paddingBottom: 20,
-  },
-  statusBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 44, // ステータスバーの高さ
-    backgroundColor: '#87CEEB', // 水色
   },
   title: {
     fontSize: 24,

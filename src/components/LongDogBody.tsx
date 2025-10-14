@@ -1,11 +1,15 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-export const LongDogBody: React.FC = () => {
+interface LongDogBodyProps {
+  totalWidth: number;
+}
+
+export const LongDogBody: React.FC<LongDogBodyProps> = ({ totalWidth }) => {
   return (
     <Image
       source={require('../../assets/simple/longdog_body.png')}
-      style={styles.image}
+      style={[styles.image, { width: totalWidth }]}
       resizeMode="stretch"
     />
   );
@@ -13,7 +17,6 @@ export const LongDogBody: React.FC = () => {
 
 const styles = StyleSheet.create({
   image: {
-    width: 1,
     height: 120,
   },
 });

@@ -1,11 +1,27 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
-export const LongDogHead: React.FC = () => {
+interface LongDogHeadProps {
+  expression: 'normal' | 'smile' | 'sad';
+  fadeAnim: Animated.Value;
+}
+
+export const LongDogHead: React.FC<LongDogHeadProps> = ({ expression, fadeAnim }) => {
+  const getImageSource = () => {
+    switch (expression) {
+      case 'smile':
+        return require('../../assets/simple/longdog_head_smile.png');
+      case 'sad':
+        return require('../../assets/simple/longdog_head_normal.png'); // sadがないのでnormalを使用
+      default:
+        return require('../../assets/simple/longdog_head_normal.png');
+    }
+  };
+
   return (
-    <Image
-      source={require('../../assets/simple/longdog_head.png')}
-      style={styles.image}
+    <Animated.Image
+      source={getImageSource()}
+      style={[styles.image, { opacity: fadeAnim }]}
       resizeMode="stretch"
     />
   );
