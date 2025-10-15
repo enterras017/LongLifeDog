@@ -7,6 +7,7 @@ import {
   ScrollView,
   Animated,
 } from 'react-native';
+import { Audio } from 'expo-av';
 import { LongDogHead } from './LongDogHead';
 import { LongDogBody } from './LongDogBody';
 import { LongDogTail } from './LongDogTail';
@@ -60,6 +61,45 @@ const LongDog: React.FC = () => {
     }
   };
 
+  const handlePet = async () => {
+    if (dogExpression === 'smile') return; // 多重反応防止
+    
+    setDogExpression('smile');
+
+    // 効果音を再生
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../assets/sounds/happy_woof.mp3')
+      );
+      await sound.playAsync();
+      // 再生が終わったら解放
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.warn('音声再生エラー:', error);
+    }
+
+    Animated.sequence([
+      Animated.timing(fadeAnim, { 
+        toValue: 0.8, 
+        duration: 150, 
+        useNativeDriver: true 
+      }),
+      Animated.timing(fadeAnim, { 
+        toValue: 1, 
+        duration: 150, 
+        useNativeDriver: true 
+      }),
+    ]).start();
+
+    setTimeout(() => {
+      setDogExpression('normal');
+    }, 1500);
+  };
+
   const handleReset = () => {
     setBodyCount(1);
     setFeedCount(0);
@@ -88,7 +128,7 @@ const LongDog: React.FC = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View style={styles.dogContainer}>
-          <LongDogHead expression={dogExpression} fadeAnim={fadeAnim} />
+          <LongDogHead expression={dogExpression} fadeAnim={fadeAnim} onPet={handlePet} />
           <LongDogBody totalWidth={bodyCount} />
           <LongDogTail />
         </View>

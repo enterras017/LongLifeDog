@@ -1,12 +1,13 @@
 import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface LongDogHeadProps {
   expression: 'normal' | 'smile' | 'sad';
   fadeAnim: Animated.Value;
+  onPet?: () => void;
 }
 
-export const LongDogHead: React.FC<LongDogHeadProps> = ({ expression, fadeAnim }) => {
+export const LongDogHead: React.FC<LongDogHeadProps> = ({ expression, fadeAnim, onPet }) => {
   const getImageSource = () => {
     switch (expression) {
       case 'smile':
@@ -19,11 +20,13 @@ export const LongDogHead: React.FC<LongDogHeadProps> = ({ expression, fadeAnim }
   };
 
   return (
-    <Animated.Image
-      source={getImageSource()}
-      style={[styles.image, { opacity: fadeAnim }]}
-      resizeMode="stretch"
-    />
+    <TouchableOpacity onPress={onPet} activeOpacity={0.8}>
+      <Animated.Image
+        source={getImageSource()}
+        style={[styles.image, { opacity: fadeAnim }]}
+        resizeMode="stretch"
+      />
+    </TouchableOpacity>
   );
 };
 
