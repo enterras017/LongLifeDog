@@ -4,14 +4,17 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import LongDog from './src/components/LongDog';
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#87CEEB" />
-      <LongDog />
-    </SafeAreaView>
+    <GestureHandlerRootView style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor="#87CEEB" />
+        <LongDog />
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 

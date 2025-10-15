@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,19 @@ const LongDog: React.FC = () => {
   const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scrollViewRef = useRef<ScrollView>(null);
+  
+  // iOS サイレントモードでも音が鳴るように設定（初回のみ）
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    }).catch(() => {
+      // no-op
+    });
+  }, []);
   
   // 安定したセグメント配列をメモ化
   const bodySegments = React.useMemo(() => {

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 interface LongDogHeadProps {
   expression: 'normal' | 'smile' | 'sad';
@@ -19,14 +20,26 @@ export const LongDogHead: React.FC<LongDogHeadProps> = ({ expression, fadeAnim, 
     }
   };
 
+  const onGestureEvent = (event: any) => {
+    // スワイプ距離が30px以上で撫でたと判定
+    if (event.nativeEvent.state === State.END) {
+      const { translationX, translationY } = event.nativeEvent;
+      const distance = Math.sqrt(translationX * translationX + translationY * translationY);
+      
+      if (distance > 30) {
+        onPet?.();
+      }
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={onPet} activeOpacity={0.8}>
+    <PanGestureHandler onHandlerStateChange={onGestureEvent}>
       <Animated.Image
         source={getImageSource()}
         style={[styles.image, { opacity: fadeAnim }]}
         resizeMode="stretch"
       />
-    </TouchableOpacity>
+    </PanGestureHandler>
   );
 };
 
