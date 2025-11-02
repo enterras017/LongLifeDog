@@ -12,7 +12,11 @@ import { LongDogHead } from './LongDogHead';
 import { LongDogBody } from './LongDogBody';
 import { LongDogTail } from './LongDogTail';
 
-const LongDog: React.FC = () => {
+interface LongDogProps {
+  onSwitchToSnake?: () => void;
+}
+
+const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const [bodyCount, setBodyCount] = useState(1);
   const [feedCount, setFeedCount] = useState(0);
   const [remainingFeeds, setRemainingFeeds] = useState(100);
@@ -131,7 +135,15 @@ const LongDog: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ながいぬのいる生活</Text>
+      {/* ステータスバーエリア */}
+      <View style={styles.statusBar}>
+        <Text style={styles.title}>ながいぬのいる生活</Text>
+        {onSwitchToSnake && (
+          <TouchableOpacity style={styles.snakeButton} onPress={onSwitchToSnake}>
+            <Text style={styles.snakeButtonText}>🏃‍♂️</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       
       <ScrollView 
         ref={scrollViewRef}
@@ -220,12 +232,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  statusBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333', // 文字色は黒
-    marginBottom: 20,
     textAlign: 'center',
+    flex: 1,
+  },
+  snakeButton: {
+    backgroundColor: '#FF6B6B',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  snakeButtonText: {
+    fontSize: 20,
   },
   scrollView: {
     height: 200, // 固定の高さ
