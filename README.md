@@ -1,97 +1,323 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# ながいぬのいる生活 (LongDogLife)
 
-# Getting Started
+<div align="center">
+  <img src="./assets/nagainu.png" alt="ながいぬ" width="200"/>
+  
+  **ながいぬにご飯をあげて育てる癒し系育成ゲーム**
+  
+  [![React Native](https://img.shields.io/badge/React%20Native-0.81.4-blue.svg)](https://reactnative.dev/)
+  [![iOS](https://img.shields.io/badge/iOS-13.0%2B-lightgrey.svg)](https://www.apple.com/ios/)
+  [![Status](https://img.shields.io/badge/Status-Alpha-orange.svg)](https://github.com)
+  [![License](https://img.shields.io/badge/License-未定-lightgrey.svg)](./LICENSE)
+</div>
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## 📱 アプリ概要
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+「ながいぬのいる生活」は、ご飯をあげると体がニョキニョキ伸びる不思議な生き物「ながいぬ」を育てる癒し系育成ゲームです。
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### 主な機能
+- 🍖 **ご飯をあげる**: ながいぬにご飯をあげて体を伸ばそう
+- 🐕 **なでなで**: ながいぬをなでなでして癒されよう
+- 🎮 **ご飯ランナー**: スワイプでながいぬを操作するミニゲーム
+- 📊 **統計**: 今日のご飯回数や成長記録を確認
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
+## 🎥 スクリーンショット
+
+```
+[メイン画面]      [ご飯ランナー]    [ゲームプレイ]
+  ┌─────┐          ┌─────┐          ┌─────┐
+  │ 🐕─🦴│          │START│          │🐕 🍖│
+  │     │          │     │          │     │
+  └─────┘          └─────┘          └─────┘
 ```
 
-## Step 2: Build and run your app
+*(スクリーンショットは開発完了後に追加予定)*
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+---
 
-### Android
+## 🚀 現在のステータス
 
-```sh
-# Using npm
-npm run android
+### ✅ 実装済み
+- [x] メイン画面（ご飯あげ・なでなで機能）
+- [x] ながいぬの表情変化
+- [x] サブゲーム「ご飯ランナー」
+- [x] スワイプ操作
+- [x] スピードアップシステム
+- [x] 画面切り替え機能
 
-# OR using Yarn
-yarn android
+### 🚧 開発中
+- [ ] データ永続化
+- [ ] 効果音の有効化
+- [ ] ハイスコア表示
+- [ ] Android対応
+
+### 📋 計画中
+- [ ] 実績システム
+- [ ] リーダーボード
+- [ ] 新しいミニゲーム
+- [ ] カスタマイズ機能
+
+---
+
+## 📚 ドキュメント
+
+このプロジェクトには以下のドキュメントが含まれています：
+
+### 1. **README.md** (このファイル)
+プロジェクトの概要と基本情報
+
+### 2. **[APP_SPECIFICATION.md](./APP_SPECIFICATION.md)** ⭐ 必読
+アプリケーションの完全な仕様書
+- アプリ概要とコンセプト
+- 全機能の詳細仕様
+- UI/UXデザイン
+- ゲームルールとバランス
+- ユーザーストーリー
+- FAQ
+
+**こんな人におすすめ**:
+- アプリの全体像を理解したい
+- 機能の詳細を知りたい
+- ユーザー体験を理解したい
+- プロダクトマネージャー、デザイナー
+
+### 3. **[TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** ⭐ 必読
+技術的な詳細ドキュメント
+- 詳細な技術仕様とコード例
+- 開発ルールと設計原則
+- 解決済みエラーと再発防止策（6つの主要エラー）
+- 今後の技術的課題
+- 運用上の検討課題
+- パフォーマンス最適化
+
+**こんな人におすすめ**:
+- 開発に参加する
+- コードを理解したい
+- エラーのトラブルシューティング
+- エンジニア、技術リード
+
+### 4. **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)**
+プロジェクト構造と役割定義
+- メイン/サブの役割分担
+- ファイル構成
+- 開発ルール
+
+**こんな人におすすめ**:
+- プロジェクトの構造を理解したい
+- どこに何があるか知りたい
+
+### 5. **[DEVELOPMENT_SUMMARY.md](./DEVELOPMENT_SUMMARY.md)**
+開発サマリー（簡易版）
+- 完成した機能の概要
+- 現在の課題
+- 次のステップ
+
+**こんな人におすすめ**:
+- 手っ取り早く現状を把握したい
+- 進捗確認
+
+---
+
+## 🛠️ 技術スタック
+
+- **フレームワーク**: React Native 0.81.4 (Bare workflow)
+- **言語**: TypeScript
+- **UI**: React Native標準コンポーネント
+- **ジェスチャー**: react-native-gesture-handler
+- **音声**: expo-av
+- **画像**: react-native-svg, PNG/SVG assets
+
+---
+
+## 💻 開発環境のセットアップ
+
+### 前提条件
+- Node.js 16.x 以上
+- npm または yarn
+- Xcode 14.x 以上（iOS開発）
+- CocoaPods（iOS依存関係管理）
+
+### インストール手順
+
+```bash
+# 1. リポジトリをクローン
+git clone [リポジトリURL]
+cd LongDogLifeNew
+
+# 2. 依存関係をインストール
+npm install
+
+# 3. iOS依存関係をインストール
+cd ios
+pod install
+cd ..
+
+# 4. Metro サーバーを起動
+npx react-native start --reset-cache
+
+# 5. 別のターミナルでiOSアプリを起動
+npx react-native run-ios --simulator="iPhone 16 Pro"
 ```
 
-### iOS
+### トラブルシューティング
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+#### ビルドエラーが発生した場合
+```bash
+# ビルドキャッシュをクリア
+rm -rf ios/build
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+# Podsを再インストール
+cd ios
+rm -rf Pods Podfile.lock
+pod install
+cd ..
 
-```sh
-bundle install
+# Metro キャッシュをクリア
+npx react-native start --reset-cache
 ```
 
-Then, and every time you update your native dependencies, run:
+#### Metro がポート8081で起動できない場合
+```bash
+# ポートを使用しているプロセスを確認
+lsof -i:8081
 
-```sh
-bundle exec pod install
+# プロセスを終了
+lsof -ti:8081 | xargs kill -9
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+詳細なトラブルシューティングは [TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md) を参照してください。
 
-```sh
-# Using npm
-npm run ios
+---
 
-# OR using Yarn
-yarn ios
+## 📁 プロジェクト構造
+
+```
+LongDogLifeNew/
+├── App.tsx                          # アプリのエントリーポイント
+├── index.js                         # React Native登録
+├── package.json                     # 依存関係
+│
+├── src/
+│   ├── components/
+│   │   ├── LongDog.tsx             # メイン画面
+│   │   ├── LongDogHead.tsx         # 頭部コンポーネント
+│   │   ├── LongDogBody.tsx         # 胴体コンポーネント
+│   │   ├── LongDogTail.tsx         # 尻尾コンポーネント
+│   │   └── SnakeGame.tsx           # ご飯ランナー
+│   └── types/
+│       └── svg.d.ts                # SVG型定義
+│
+├── assets/
+│   ├── simple/                     # ゲーム用画像
+│   ├── sounds/                     # 効果音
+│   └── ...
+│
+├── ios/                            # iOSネイティブコード
+├── android/                        # Androidネイティブコード
+│
+└── docs/                           # ドキュメント
+    ├── README.md                   # このファイル
+    ├── APP_SPECIFICATION.md        # アプリ仕様書
+    ├── TECHNICAL_DOCUMENTATION.md  # 技術ドキュメント
+    ├── PROJECT_STRUCTURE.md        # プロジェクト構造
+    └── DEVELOPMENT_SUMMARY.md      # 開発サマリー
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+---
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🎮 使い方
 
-## Step 3: Modify your app
+### メイン画面
+1. **ご飯をあげる**: 「ごはんをあげる」ボタンをタップ
+2. **なでなで**: ながいぬの頭をタップ
+3. **リセット**: 「リセット」ボタンで初期状態に戻る
 
-Now that you have successfully run the app, let's make changes!
+### ご飯ランナー
+1. 右上の 🏃‍♂️ ボタンをタップ
+2. 「スタート」ボタンでゲーム開始
+3. スワイプでながいぬを操作
+4. ご飯を集めてスピードアップ
+5. 壁に当たったらゲームオーバー
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+---
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🤝 コントリビューション
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+現在、このプロジェクトは個人開発中のため、外部からのコントリビューションは受け付けていません。
 
-## Congratulations! :tada:
+将来的にオープンソース化した際は、以下のガイドラインに従ってください：
+- イシューを作成してから作業を開始
+- コードスタイルガイドに従う
+- テストを書く
+- ドキュメントを更新
 
-You've successfully run and modified your React Native App. :partying_face:
+---
 
-### Now what?
+## 📄 ライセンス
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+現在未定。将来的にライセンスを決定予定です。
 
-# Troubleshooting
+---
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## 👤 作者
 
-# Learn More
+**Enter**
 
-To learn more about React Native, take a look at the following resources:
+---
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 🙏 謝辞
+
+- React Native コミュニティ
+- Expo チーム
+- テスターの皆さん（将来）
+
+---
+
+## 📞 サポート
+
+バグ報告や機能リクエストは、以下の方法で受け付けています：
+- GitHub Issues（将来実装）
+- メール: [未定]
+
+---
+
+## 📊 ロードマップ
+
+### Phase 1: 基本機能完成（現在）
+- [x] メイン機能実装
+- [x] サブゲーム実装
+- [ ] データ永続化
+- [ ] Android対応
+
+### Phase 2: 機能拡張（3-6ヶ月）
+- [ ] 実績システム
+- [ ] ハイスコアシステム
+- [ ] 新しいミニゲーム
+- [ ] カスタマイズ機能
+
+### Phase 3: ソーシャル機能（6-12ヶ月）
+- [ ] リーダーボード
+- [ ] スコアシェア
+- [ ] フレンド機能
+
+詳細は [APP_SPECIFICATION.md](./APP_SPECIFICATION.md) の「将来の拡張計画」を参照してください。
+
+---
+
+## 🔗 関連リンク
+
+- [React Native 公式ドキュメント](https://reactnative.dev/)
+- [Expo ドキュメント](https://docs.expo.dev/)
+- [TypeScript ハンドブック](https://www.typescriptlang.org/docs/)
+
+---
+
+<div align="center">
+  Made with ❤️ and React Native
+  
+  **ながいぬと楽しい生活を！**
+</div>

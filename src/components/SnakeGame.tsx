@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Image,
-  PanResponder,
 } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 // import { Audio } from 'expo-av'; // 一時的に無効化
@@ -60,15 +58,23 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
   //   });
   // }, []);
 
-  // ランダムな位置にごはんを配置
-  const generateFood = (): Position => {
+  // ランダムな位置にごはんを配置（snakeを引数で受け取る）
+  const generateFood = (currentSnake: SnakeSegment[]): Position => {
     let newFood: Position;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
     do {
       newFood = {
         x: Math.floor(Math.random() * GRID_SIZE),
         y: Math.floor(Math.random() * 15),
       };
-    } while (snake.some(segment => segment.x === newFood.x && segment.y === newFood.y));
+      attempts++;
+    } while (
+      attempts < maxAttempts &&
+      currentSnake.some(segment => segment.x === newFood.x && segment.y === newFood.y)
+    );
+    
     return newFood;
   };
 
@@ -90,105 +96,125 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     // }
   };
 
-  // スネークの移動
-  const moveSnake = useCallback(() => {
-    if (gameState !== 'playing') return;
+  // スネークの移動（useRefを使った実装に変更）
+  const moveSnakeRef = useRef<() => void>();
+  
+  useEffect(() => {
+    moveSnakeRef.current = () => {
+      if (gameState !== 'playing') return;
 
-    setSnake(prevSnake => {
-      const newSnake = [...prevSnake];
-      const head = { ...newSnake[0] };
+      setSnake(prevSnake => {
+        const newSnake = [...prevSnake];
+        const head = { ...newSnake[0] };
 
-      // 方向に応じて頭の位置を更新
-      switch (direction) {
-        case 'up':
-          head.y -= 1;
-          break;
-        case 'down':
-          head.y += 1;
-          break;
-        case 'left':
-          head.x -= 1;
-          break;
-        case 'right':
-          head.x += 1;
-          break;
-      }
+        // 方向に応じて頭の位置を更新（directionRef.currentを使用）
+        switch (directionRef.current) {
+          case 'up':
+            head.y -= 1;
+            break;
+          case 'down':
+            head.y += 1;
+            break;
+          case 'left':
+            head.x -= 1;
+            break;
+          case 'right':
+            head.x += 1;
+            break;
+        }
 
-      // 壁との衝突判定
-      if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= 15) {
-        setGameState('gameOver');
-        setDogExpression('sad');
-        return prevSnake;
-      }
+        // 壁との衝突判定
+        if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= 15) {
+          setGameState('gameOver');
+          setDogExpression('sad');
+          return prevSnake;
+        }
 
-      // 自分の体との衝突判定 (頭のみなので、このチェックは常にfalseになるが、残しておく)
-      if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
-        setGameState('gameOver');
-        setDogExpression('sad');
-        return prevSnake;
-      }
+        // 自分の体との衝突判定 (頭のみなので、このチェックは常にfalseになるが、残しておく)
+        if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
+          setGameState('gameOver');
+          setDogExpression('sad');
+          return prevSnake;
+        }
 
-      // 新しい頭を追加
-      newSnake.unshift(head);
+        // 新しい頭を追加
+        newSnake.unshift(head);
 
-      // ごはんを食べたかチェック
-      if (head.x === food.x && head.y === food.y) {
-        setSpeedLevel(prev => prev + 1); // スピードレベルを上げる
-        setDogExpression('smile');
-        playWoofSound();
-        
-        // フェードアニメーション
-        Animated.sequence([
-          Animated.timing(fadeAnim, { 
-            toValue: 0.8, 
-            duration: 150, 
-            useNativeDriver: true 
-          }),
-          Animated.timing(fadeAnim, { 
-            toValue: 1, 
-            duration: 150, 
-            useNativeDriver: true 
-          }),
-        ]).start();
+        // ごはんを食べたかチェック
+        if (head.x === food.x && head.y === food.y) {
+          setSpeedLevel(prev => prev + 1); // スピードレベルを上げる
+          setDogExpression('smile');
+          playWoofSound();
+          
+          // フェードアニメーション
+          Animated.sequence([
+            Animated.timing(fadeAnim, { 
+              toValue: 0.8, 
+              duration: 150, 
+              useNativeDriver: true 
+            }),
+            Animated.timing(fadeAnim, { 
+              toValue: 1, 
+              duration: 150, 
+              useNativeDriver: true 
+            }),
+          ]).start();
 
-        // 1.5秒後に表情を戻す
-        setTimeout(() => {
-          setDogExpression('normal');
-        }, 1500);
+          // 1.5秒後に表情を戻す
+          setTimeout(() => {
+            setDogExpression('normal');
+          }, 1500);
 
-        // 新しいごはんを配置
-        setFood(generateFood());
-      }
+          // 新しいごはんを配置（現在のsnakeを渡す）
+          const newFoodPos = generateFood([...newSnake]);
+          setFood(newFoodPos);
+        }
 
-      // 胴体の長さを固定（1セグメント：頭のみ）にするため、尻尾を削除
-      newSnake.pop();
+        // 胴体の長さを固定（1セグメント：頭のみ）にするため、尻尾を削除
+        newSnake.pop();
 
-      return newSnake;
-    });
-  }, [direction, gameState, food, generateFood, fadeAnim]);
+        return newSnake;
+      });
+    };
+  }, [gameState, food, fadeAnim]);
+
+  // スピードレベルをrefで管理（ゲームループの再作成を防ぐ）
+  const speedLevelRef = useRef(1);
+  
+  useEffect(() => {
+    speedLevelRef.current = speedLevel;
+  }, [speedLevel]);
 
   // ゲームループ（スピードレベルに応じて速度調整）
   useEffect(() => {
     if (gameState === 'playing') {
-      // スピードレベルに応じて速度を調整（レベルが上がるほど速く）
-      const baseSpeed = 200;
-      const speedIncrement = 15; // レベルごとに15ms速く
-      const gameSpeed = Math.max(50, baseSpeed - (speedLevel - 1) * speedIncrement);
+      const tick = () => {
+        if (moveSnakeRef.current) {
+          moveSnakeRef.current();
+        }
+        
+        // 次のティックをスケジュール（スピードレベルに応じて）
+        const baseSpeed = 200;
+        const speedIncrement = 15;
+        const gameSpeed = Math.max(50, baseSpeed - (speedLevelRef.current - 1) * speedIncrement);
+        
+        gameLoopRef.current = setTimeout(tick, gameSpeed) as any;
+      };
       
-      gameLoopRef.current = setInterval(moveSnake, gameSpeed);
+      tick(); // 開始
     } else {
       if (gameLoopRef.current) {
-        clearInterval(gameLoopRef.current);
+        clearTimeout(gameLoopRef.current);
         gameLoopRef.current = null;
       }
     }
 
     return () => {
       if (gameLoopRef.current) {
-        clearInterval(gameLoopRef.current);
+        clearTimeout(gameLoopRef.current);
       }
     };
-  }, [moveSnake, gameState, speedLevel]);
+  }, [gameState]);
 
   // ジェスチャーイベント処理
   const onGestureEvent = (event: any) => {
@@ -228,13 +254,13 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
 
   // ゲームリスタート
   const restartGame = () => {
-    setSnake([
-      { x: 5, y: 7 }  // 頭のみ
-    ]);
-    setFood(generateFood());
+    const initialSnake = [{ x: 5, y: 7 }];
+    setSnake(initialSnake);
+    setFood(generateFood(initialSnake));
     setDirection('right');
     directionRef.current = 'right';
     setSpeedLevel(1);
+    speedLevelRef.current = 1;
     setGameState('ready');
     setDogExpression('normal');
     fadeAnim.setValue(1);

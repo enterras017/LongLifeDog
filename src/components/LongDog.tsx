@@ -25,6 +25,7 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scrollViewRef = useRef<ScrollView>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
   
   // iOS サイレントモードでも音が鳴るように設定（初回のみ）
   useEffect(() => {
@@ -37,12 +38,16 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
     }).catch(() => {
       // no-op
     });
+
+    // クリーンアップ: コンポーネントアンマウント時に音声を解放
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync().catch(() => {
+          // ignore
+        });
+      }
+    };
   }, []);
-  
-  // 安定したセグメント配列をメモ化
-  const bodySegments = React.useMemo(() => {
-    return Array.from({ length: bodyCount }, (_, i) => i);
-  }, [bodyCount]);
 
   const handleFeed = () => {
     if (remainingFeeds > 0) {
@@ -81,6 +86,17 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const handlePet = async () => {
     if (dogExpression === 'smile') return; // 多重反応防止
     
+    // 既存の音声を停止して解放
+    if (soundRef.current) {
+      try {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      } catch (e) {
+        // ignore
+      }
+      soundRef.current = null;
+    }
+    
     setDogExpression('smile');
 
     // 効果音を再生
@@ -88,11 +104,18 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
       const { sound } = await Audio.Sound.createAsync(
         require('../../assets/sounds/happy_woof.mp3')
       );
+      soundRef.current = sound;
       await sound.playAsync();
+      
       // 再生が終わったら解放
       sound.setOnPlaybackStatusUpdate((status) => {
         if (status.isLoaded && status.didJustFinish) {
-          sound.unloadAsync();
+          sound.unloadAsync().catch(() => {
+            // ignore
+          });
+          if (soundRef.current === sound) {
+            soundRef.current = null;
+          }
         }
       });
     } catch (error) {
@@ -127,10 +150,6 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
 
   const getDogLength = () => {
     return Math.round(50 + (bodyCount - 1) * 1); // 基本50cm + セグメント×1cm
-  };
-
-  const getDisplayLength = () => {
-    return Math.round(200 + feedCount * 8); // 表示用の長さ
   };
 
   return (

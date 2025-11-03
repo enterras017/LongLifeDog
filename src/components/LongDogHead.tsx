@@ -21,12 +21,13 @@ export const LongDogHead: React.FC<LongDogHeadProps> = ({ expression, fadeAnim, 
   };
 
   const onGestureEvent = (event: any) => {
-    // スワイプ距離が30px以上で撫でたと判定
+    // タップ（distance < 10）またはスワイプ（distance > 30）で撫でたと判定
     if (event.nativeEvent.state === State.END) {
       const { translationX, translationY } = event.nativeEvent;
       const distance = Math.sqrt(translationX * translationX + translationY * translationY);
       
-      if (distance > 30) {
+      // タップまたはスワイプで反応（中途半端な距離は無視）
+      if (distance < 10 || distance > 30) {
         onPet?.();
       }
     }
