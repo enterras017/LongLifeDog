@@ -23,14 +23,14 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#87CEEB" />
         {appMode === 'main' ? (
           <LongDog onSwitchToSnake={switchToFoodRunner} />
         ) : (
           <FoodRunner onBackToMain={switchToMain} />
         )}
-      </SafeAreaView>
+    </SafeAreaView>
     </GestureHandlerRootView>
   );
 }

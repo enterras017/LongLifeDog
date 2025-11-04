@@ -6,7 +6,7 @@ interface LongDogBodyProps {
 }
 
 export const LongDogBody: React.FC<LongDogBodyProps> = ({ totalWidth }) => {
-  return (
+    return (
     <Image
       source={require('../../assets/simple/longdog_body.png')}
       style={[styles.image, { width: totalWidth }]}

@@ -5,9 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  Vibration,
 } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-// import { Audio } from 'expo-av'; // 一時的に無効化
+import { loadFoodRunnerData, saveFoodRunnerData, type FoodRunnerData, loadSettings, saveSettings } from '../utils/storage';
+import { Audio } from 'expo-av';
+import { Tutorial } from './Tutorial';
 
 const GRID_SIZE = 10;
 const CELL_SIZE = 30;
@@ -41,22 +44,55 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
   const [direction, setDirection] = useState<Direction>('right');
   const [speedLevel, setSpeedLevel] = useState(1);
   const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
+  const [highScore, setHighScore] = useState(0);
+  const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(false);
   
   // アニメーション
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const gameLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const directionRef = useRef<Direction>('right');
+  const foodCollectedThisGame = useRef(0);
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const hasShownTutorial = useRef(false);
 
-  // 音声設定（一時的に無効化）
-  // useEffect(() => {
-  //   Audio.setAudioModeAsync({
-  //     playsInSilentModeIOS: true,
-  //     allowsRecordingIOS: false,
-  //     staysActiveInBackground: false,
-  //     shouldDuckAndroid: true,
-  //     playThroughEarpieceAndroid: false,
-  //   });
-  // }, []);
+  // データの読み込み
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await loadFoodRunnerData();
+      setHighScore(data.highScore);
+      setTotalGamesPlayed(data.totalGamesPlayed);
+
+      // 初回プレイ時のみチュートリアルを表示
+      if (data.totalGamesPlayed === 0 && !hasShownTutorial.current) {
+        setShowTutorial(true);
+        hasShownTutorial.current = true;
+      }
+    };
+    loadData();
+  }, []);
+
+  // 音声設定とクリーンアップ
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    }).catch(() => {
+      // no-op
+    });
+
+    // クリーンアップ
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync().catch(() => {
+          // ignore
+        });
+      }
+    };
+  }, []);
 
   // ランダムな位置にごはんを配置（snakeを引数で受け取る）
   const generateFood = (currentSnake: SnakeSegment[]): Position => {
@@ -78,22 +114,69 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     return newFood;
   };
 
-  // 効果音再生（一時的に無効化）
-  const playWoofSound = async () => {
-    console.log('ワン！'); // コンソールログで代用
-    // try {
-    //   const { sound } = await Audio.Sound.createAsync(
-    //     require('../../assets/sounds/happy_woof.mp3')
-    //   );
-    //   await sound.playAsync();
-    //   sound.setOnPlaybackStatusUpdate((status: any) => {
-    //     if (status.isLoaded && status.didJustFinish) {
-    //       sound.unloadAsync();
-    //     }
-    //   });
-    // } catch (error) {
-    //   console.warn('音声再生エラー:', error);
-    // }
+  // 効果音再生（メイン画面の「わん！」を流用）
+  const playSound = async () => {
+    // 設定を確認
+    const settings = await loadSettings();
+    if (!settings.soundEnabled) return;
+
+    // 既存の音声を停止して解放
+    if (soundRef.current) {
+      try {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      } catch (e) {
+        // ignore
+      }
+      soundRef.current = null;
+    }
+    
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../assets/sounds/happy_woof.mp3')
+      );
+      soundRef.current = sound;
+      await sound.playAsync();
+      
+      // 再生が終わったら解放
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          sound.unloadAsync().catch(() => {
+            // ignore
+          });
+          if (soundRef.current === sound) {
+            soundRef.current = null;
+          }
+        }
+      });
+    } catch (error) {
+      console.warn('音声再生エラー:', error);
+    }
+  };
+
+  // ゲームデータの保存
+  const saveGameData = async (finalScore: number) => {
+    try {
+      const currentData = await loadFoodRunnerData();
+      const newHighScore = Math.max(currentData.highScore, finalScore);
+      
+      const updatedData: FoodRunnerData = {
+        highScore: newHighScore,
+        totalGamesPlayed: currentData.totalGamesPlayed + 1,
+        totalFoodCollected: currentData.totalFoodCollected + foodCollectedThisGame.current,
+        lastPlayedAt: new Date().toISOString(),
+      };
+
+      await saveFoodRunnerData(updatedData);
+      
+      // ハイスコア更新
+      if (newHighScore > highScore) {
+        setHighScore(newHighScore);
+      }
+      setTotalGamesPlayed(prev => prev + 1);
+    } catch (error) {
+      console.error('ゲームデータの保存エラー:', error);
+    }
   };
 
   // スネークの移動（useRefを使った実装に変更）
@@ -127,6 +210,17 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
         if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= 15) {
           setGameState('gameOver');
           setDogExpression('sad');
+          
+          // ゲームオーバー効果（長めの振動）
+          loadSettings().then(settings => {
+            if (settings.vibrationEnabled) {
+              Vibration.vibrate([0, 200, 100, 200]); // パターン振動
+            }
+          });
+          
+          // ゲームオーバー時にデータを保存
+          saveGameData(speedLevel);
+          
           return prevSnake;
         }
 
@@ -134,6 +228,11 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
         if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
           setGameState('gameOver');
           setDogExpression('sad');
+          loadSettings().then(settings => {
+            if (settings.vibrationEnabled) {
+              Vibration.vibrate([0, 200, 100, 200]); // パターン振動
+            }
+          });
           return prevSnake;
         }
 
@@ -143,8 +242,16 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
         // ごはんを食べたかチェック
         if (head.x === food.x && head.y === food.y) {
           setSpeedLevel(prev => prev + 1); // スピードレベルを上げる
+          foodCollectedThisGame.current += 1; // ご飯を集めた数をカウント
           setDogExpression('smile');
-          playWoofSound();
+          
+          // 効果音 + バイブレーション
+          playSound();
+          loadSettings().then(settings => {
+            if (settings.vibrationEnabled) {
+              Vibration.vibrate(100); // 100ms振動
+            }
+          });
           
           // フェードアニメーション
           Animated.sequence([
@@ -248,8 +355,16 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
   };
 
   // ゲームスタート
-  const startGame = () => {
+  const startGame = async () => {
+    const settings = await loadSettings();
+    if (settings.vibrationEnabled) {
+      Vibration.vibrate(50); // 軽い振動
+    }
     setGameState('playing');
+  };
+
+  const handleCloseTutorial = () => {
+    setShowTutorial(false);
   };
 
   // ゲームリスタート
@@ -261,6 +376,7 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     directionRef.current = 'right';
     setSpeedLevel(1);
     speedLevelRef.current = 1;
+    foodCollectedThisGame.current = 0; // ご飯カウントをリセット
     setGameState('ready');
     setDogExpression('normal');
     fadeAnim.setValue(1);
@@ -305,6 +421,9 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
 
   return (
     <View style={styles.container}>
+      {/* チュートリアル */}
+      {showTutorial && <Tutorial type="foodRunner" onClose={handleCloseTutorial} />}
+
       {/* メインに戻るボタン */}
       {onBackToMain && (
         <TouchableOpacity style={styles.backButton} onPress={onBackToMain}>
@@ -314,7 +433,18 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
 
       {/* スピードレベル表示 */}
       <View style={styles.scoreContainer}>
-        <Text style={styles.scoreText}>スピード: {speedLevel}</Text>
+        <View style={styles.scoreHeader}>
+          <Text style={styles.scoreText}>スピード: {speedLevel}</Text>
+          <TouchableOpacity 
+            style={styles.helpIconButton} 
+            onPress={() => setShowTutorial(true)}
+          >
+            <Text style={styles.helpIcon}>？</Text>
+          </TouchableOpacity>
+        </View>
+        {highScore > 0 && (
+          <Text style={styles.highScoreText}>ハイスコア: {highScore}</Text>
+        )}
       </View>
 
       {/* ゲームエリア */}
@@ -377,10 +507,34 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     zIndex: 10,
   },
+  scoreHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   scoreText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
+  },
+  helpIconButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#4CAF50',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  helpIcon: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  highScoreText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666',
+    marginTop: 4,
   },
   gameArea: {
     width: GAME_WIDTH,

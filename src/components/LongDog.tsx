@@ -11,6 +11,9 @@ import { Audio } from 'expo-av';
 import { LongDogHead } from './LongDogHead';
 import { LongDogBody } from './LongDogBody';
 import { LongDogTail } from './LongDogTail';
+import { Tutorial } from './Tutorial';
+import { Settings } from './Settings';
+import { loadMainData, saveMainData, type MainData, loadSettings, saveSettings } from '../utils/storage';
 
 interface LongDogProps {
   onSwitchToSnake?: () => void;
@@ -21,11 +24,64 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const [feedCount, setFeedCount] = useState(0);
   const [remainingFeeds, setRemainingFeeds] = useState(100);
   const [lastFeedDate, setLastFeedDate] = useState<string | null>(null);
+  const [totalPetCount, setTotalPetCount] = useState(0);
   const [segmentIncrement, setSegmentIncrement] = useState(10); // 検証用: セグメント増加量
   const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
+  const [isLoading, setIsLoading] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scrollViewRef = useRef<ScrollView>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
+  const mountTimeRef = useRef<number>(Date.now());
+  
+  // データの読み込み
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await loadMainData();
+        setBodyCount(data.bodyCount);
+        setFeedCount(data.feedCount);
+        setRemainingFeeds(data.remainingFeeds);
+        setLastFeedDate(data.lastFeedDate);
+        setTotalPetCount(data.totalPetCount);
+
+        // チュートリアル表示判定
+        const settings = await loadSettings();
+        if (!settings.tutorialCompleted) {
+          setShowTutorial(true);
+        }
+      } catch (error) {
+        console.error('データ読み込みエラー:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // データの自動保存（状態が変わったら保存）
+  useEffect(() => {
+    if (isLoading) return; // 初回読み込み中は保存しない
+
+    const saveData = async () => {
+      const data: MainData = {
+        bodyCount,
+        feedCount,
+        remainingFeeds,
+        lastFeedDate,
+        totalPetCount,
+        totalPlayTime: Math.floor((Date.now() - mountTimeRef.current) / 1000),
+        createdAt: new Date().toISOString(), // 既存データがあればそのまま
+        lastPlayedAt: new Date().toISOString(),
+      };
+
+      await saveMainData(data);
+    };
+
+    saveData();
+  }, [bodyCount, feedCount, remainingFeeds, lastFeedDate, totalPetCount, isLoading]);
   
   // iOS サイレントモードでも音が鳴るように設定（初回のみ）
   useEffect(() => {
@@ -86,40 +142,45 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const handlePet = async () => {
     if (dogExpression === 'smile') return; // 多重反応防止
     
-    // 既存の音声を停止して解放
-    if (soundRef.current) {
-      try {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      } catch (e) {
-        // ignore
-      }
-      soundRef.current = null;
-    }
-    
     setDogExpression('smile');
+    setTotalPetCount(prev => prev + 1); // なでなで回数をカウント
 
-    // 効果音を再生
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        require('../../assets/sounds/happy_woof.mp3')
-      );
-      soundRef.current = sound;
-      await sound.playAsync();
-      
-      // 再生が終わったら解放
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded && status.didJustFinish) {
-          sound.unloadAsync().catch(() => {
-            // ignore
-          });
-          if (soundRef.current === sound) {
-            soundRef.current = null;
-          }
+    // 設定を確認して効果音を再生
+    const settings = await loadSettings();
+    if (settings.soundEnabled) {
+      // 既存の音声を停止して解放
+      if (soundRef.current) {
+        try {
+          await soundRef.current.stopAsync();
+          await soundRef.current.unloadAsync();
+        } catch (e) {
+          // ignore
         }
-      });
-    } catch (error) {
-      console.warn('音声再生エラー:', error);
+        soundRef.current = null;
+      }
+      
+      // 効果音を再生
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/happy_woof.mp3')
+        );
+        soundRef.current = sound;
+        await sound.playAsync();
+        
+        // 再生が終わったら解放
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if (status.isLoaded && status.didJustFinish) {
+            sound.unloadAsync().catch(() => {
+              // ignore
+            });
+            if (soundRef.current === sound) {
+              soundRef.current = null;
+            }
+          }
+        });
+      } catch (error) {
+        console.warn('音声再生エラー:', error);
+      }
     }
 
     Animated.sequence([
@@ -152,16 +213,52 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
     return Math.round(50 + (bodyCount - 1) * 1); // 基本50cm + セグメント×1cm
   };
 
+  const handleCloseTutorial = async () => {
+    setShowTutorial(false);
+    // チュートリアル完了フラグを保存
+    const settings = await loadSettings();
+    await saveSettings({ ...settings, tutorialCompleted: true });
+  };
+
+  // ローディング中
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <Text style={styles.loadingText}>読み込み中...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
+      {/* チュートリアル */}
+      {showTutorial && <Tutorial type="main" onClose={handleCloseTutorial} />}
+      
+      {/* 設定 */}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+
       {/* ステータスバーエリア */}
       <View style={styles.statusBar}>
+        <TouchableOpacity 
+          style={styles.settingsButton} 
+          onPress={() => setShowSettings(true)}
+        >
+          <Text style={styles.settingsButtonText}>⚙️</Text>
+        </TouchableOpacity>
         <Text style={styles.title}>ながいぬのいる生活</Text>
-        {onSwitchToSnake && (
-          <TouchableOpacity style={styles.snakeButton} onPress={onSwitchToSnake}>
-            <Text style={styles.snakeButtonText}>🏃‍♂️</Text>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity 
+            style={styles.helpButton} 
+            onPress={() => setShowTutorial(true)}
+          >
+            <Text style={styles.helpButtonText}>？</Text>
           </TouchableOpacity>
-        )}
+          {onSwitchToSnake && (
+            <TouchableOpacity style={styles.snakeButton} onPress={onSwitchToSnake}>
+              <Text style={styles.snakeButtonText}>🏃‍♂️</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       
       <ScrollView 
@@ -251,6 +348,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  loadingContainer: {
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#666',
+  },
   statusBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -265,6 +369,44 @@ const styles = StyleSheet.create({
     color: '#333', // 文字色は黒
     textAlign: 'center',
     flex: 1,
+  },
+  settingsButton: {
+    backgroundColor: '#2196F3',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  settingsButtonText: {
+    fontSize: 24,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  helpButton: {
+    backgroundColor: '#4CAF50',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  helpButtonText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
   },
   snakeButton: {
     backgroundColor: '#FF6B6B',
