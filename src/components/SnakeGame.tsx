@@ -390,10 +390,10 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     let cellContent = null;
 
     if (isSnakeHead) {
-      // ながいぬの画像（常に同じ）
+      // 頭の画像
       cellContent = (
         <Animated.Image
-          source={require('../../assets/simple/longdog.png')}
+          source={require('../../assets/simple/longdog_head.png')}
           style={[styles.cellImage, { opacity: fadeAnim }]}
           resizeMode="contain"
         />
