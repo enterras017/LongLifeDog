@@ -22,10 +22,10 @@ interface LongDogProps {
 const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const [bodyCount, setBodyCount] = useState(1);
   const [feedCount, setFeedCount] = useState(0);
-  const [remainingFeeds, setRemainingFeeds] = useState(100);
+  const [remainingFeeds, setRemainingFeeds] = useState(3); // デフォルト3回に変更
   const [lastFeedDate, setLastFeedDate] = useState<string | null>(null);
   const [totalPetCount, setTotalPetCount] = useState(0);
-  const [segmentIncrement, setSegmentIncrement] = useState(10); // 検証用: セグメント増加量
+  const segmentIncrement = 1; // 固定値に変更（検証用機能を削除）
   const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
   const [isLoading, setIsLoading] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -204,7 +204,7 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
   const handleReset = () => {
     setBodyCount(1);
     setFeedCount(0);
-    setRemainingFeeds(100);
+    setRemainingFeeds(3); // デフォルト3回に変更
     setLastFeedDate(null);
     setDogExpression('normal'); // 表情も通常に戻す
   };
@@ -291,15 +291,8 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
             <Text style={styles.feedIcon}>🍖</Text>
             <View style={styles.buttonTextContainer}>
               <Text style={styles.feedButtonText}>ごはんをあげる</Text>
-              <Text style={styles.remainingText}>残り {remainingFeeds}/100回</Text>
+              <Text style={styles.remainingText}>残り {remainingFeeds}/3回</Text>
             </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-          <View style={styles.buttonContent}>
-            <Text style={styles.resetIcon}>🔄</Text>
-            <Text style={styles.resetButtonText}>リセット</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -309,31 +302,6 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
         <Text style={styles.statsText}>
           最後のごはん: {lastFeedDate || 'まだ'}
         </Text>
-      </View>
-
-      {/* 検証用ボタン */}
-      <View style={styles.debugContainer}>
-        <Text style={styles.debugTitle}>検証用: セグメント増加量</Text>
-        <View style={styles.debugButtonRow}>
-          <TouchableOpacity 
-            style={[styles.debugButton, segmentIncrement === 1 && styles.debugButtonActive]} 
-            onPress={() => setSegmentIncrement(1)}
-          >
-            <Text style={styles.debugButtonText}>1</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.debugButton, segmentIncrement === 5 && styles.debugButtonActive]} 
-            onPress={() => setSegmentIncrement(5)}
-          >
-            <Text style={styles.debugButtonText}>5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.debugButton, segmentIncrement === 10 && styles.debugButtonActive]} 
-            onPress={() => setSegmentIncrement(10)}
-          >
-            <Text style={styles.debugButtonText}>10</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
@@ -361,68 +329,69 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#333', // 文字色は黒
+    color: '#333',
     textAlign: 'center',
     flex: 1,
+    marginHorizontal: 10,
   },
   settingsButton: {
     backgroundColor: '#2196F3',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   settingsButtonText: {
-    fontSize: 24,
+    fontSize: 20,
   },
   headerButtons: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   helpButton: {
     backgroundColor: '#4CAF50',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   helpButtonText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
   },
   snakeButton: {
     backgroundColor: '#FF6B6B',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   snakeButtonText: {
-    fontSize: 20,
+    fontSize: 18,
   },
   scrollView: {
     height: 200, // 固定の高さ
@@ -481,31 +450,12 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: '#ccc',
   },
-  resetButton: {
-    backgroundColor: '#ff6b6b',
-    borderRadius: 25,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    width: '80%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   feedIcon: {
-    fontSize: 20,
-    marginRight: 10,
-  },
-  resetIcon: {
     fontSize: 20,
     marginRight: 10,
   },
@@ -521,11 +471,6 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  resetButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   statsContainer: {
     alignItems: 'center',
   },
@@ -533,35 +478,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginBottom: 5,
-  },
-  debugContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  debugTitle: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 10,
-  },
-  debugButtonRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  debugButton: {
-    backgroundColor: '#e0e0e0',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 15,
-    minWidth: 40,
-    alignItems: 'center',
-  },
-  debugButtonActive: {
-    backgroundColor: '#4CAF50',
-  },
-  debugButtonText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: 'bold',
   },
 });
 
