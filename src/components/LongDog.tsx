@@ -300,7 +300,7 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
             onPress={onSwitchToSnake}
           >
             <Text style={styles.bottomButtonIcon}>🐶</Text>
-            <Text style={styles.bottomButtonText}>ランナー</Text>
+            <Text style={styles.bottomButtonText}>あそぶ</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity 
