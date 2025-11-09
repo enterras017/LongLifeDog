@@ -46,6 +46,7 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
   const [highScore, setHighScore] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   
   // アニメーション
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -349,12 +350,27 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     }
   };
 
-  // ゲームスタート
+  // ゲームスタート（カウントダウン付き）
   const startGame = async () => {
     const settings = await loadSettings();
     if (settings.vibrationEnabled) {
       Vibration.vibrate(50); // 軽い振動
     }
+    
+    // カウントダウン開始
+    setCountdown(3);
+    
+    // 3秒カウントダウン
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 1000));
+    setCountdown(2);
+    
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 1000));
+    setCountdown(1);
+    
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 1000));
+    setCountdown(null);
+    
+    // ゲーム開始
     setGameState('playing');
   };
 
@@ -460,6 +476,13 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
           <TouchableOpacity style={styles.startButton} onPress={startGame}>
             <Text style={styles.startButtonText}>スタート</Text>
           </TouchableOpacity>
+        </View>
+      )}
+
+      {/* カウントダウン表示 */}
+      {countdown !== null && (
+        <View style={styles.countdownOverlay}>
+          <Text style={styles.countdownText}>{countdown}</Text>
         </View>
       )}
 
@@ -598,6 +621,25 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 22,
     fontWeight: 'bold',
+  },
+  countdownOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  countdownText: {
+    fontSize: 120,
+    fontWeight: 'bold',
+    color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 10,
   },
   gameOverOverlay: {
     position: 'absolute',
