@@ -46,6 +46,17 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
         setLastFeedDate(data.lastFeedDate);
         setTotalPetCount(data.totalPetCount);
 
+        // 最後にご飯をあげた日から1日以上経過しているかチェック
+        if (data.lastFeedDate) {
+          const lastFeed = new Date(data.lastFeedDate);
+          const now = new Date();
+          const daysDiff = Math.floor((now.getTime() - lastFeed.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (daysDiff >= 1) {
+            setDogExpression('sad');
+          }
+        }
+
         // チュートリアル表示判定
         const settings = await loadSettings();
         if (!settings.tutorialCompleted) {
