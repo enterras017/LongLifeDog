@@ -7,7 +7,8 @@
   
   [![React Native](https://img.shields.io/badge/React%20Native-0.81.4-blue.svg)](https://reactnative.dev/)
   [![iOS](https://img.shields.io/badge/iOS-13.0%2B-lightgrey.svg)](https://www.apple.com/ios/)
-  [![Status](https://img.shields.io/badge/Status-Alpha-orange.svg)](https://github.com)
+  [![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](https://github.com)
+  [![Status](https://img.shields.io/badge/Status-MVP%20Ready-brightgreen.svg)](https://github.com)
   [![License](https://img.shields.io/badge/License-未定-lightgrey.svg)](./LICENSE)
 </div>
 
@@ -19,9 +20,11 @@
 
 ### 主な機能
 - 🍖 **ご飯をあげる**: ながいぬにご飯をあげて体を伸ばそう
-- 🐕 **なでなで**: ながいぬをなでなでして癒されよう
+- 🐕 **なでなで**: ながいぬをなでなでして癒されよう（効果音付き）
 - 🎮 **ご飯ランナー**: スワイプでながいぬを操作するミニゲーム
-- 📊 **統計**: 今日のご飯回数や成長記録を確認
+- 💾 **データ保存**: 進捗とハイスコアを自動保存
+- 🎓 **チュートリアル**: 初回起動時に遊び方を説明
+- ⚙️ **設定**: 効果音・バイブレーションのON/OFF
 
 ---
 
@@ -41,25 +44,39 @@
 
 ## 🚀 現在のステータス
 
-### ✅ 実装済み
+### ✅ MVP v1.0.0 完成！（2025年11月）
+
+#### コア機能
 - [x] メイン画面（ご飯あげ・なでなで機能）
-- [x] ながいぬの表情変化
+- [x] ながいぬの表情変化（通常・笑顔・悲しい）
 - [x] サブゲーム「ご飯ランナー」
-- [x] スワイプ操作
+- [x] スワイプ操作とゲームコントロール
 - [x] スピードアップシステム
 - [x] 画面切り替え機能
 
-### 🚧 開発中
-- [ ] データ永続化
-- [ ] 効果音の有効化
-- [ ] ハイスコア表示
-- [ ] Android対応
+#### データ・設定
+- [x] データ永続化（AsyncStorage）
+- [x] ハイスコア保存・表示
+- [x] 設定画面（効果音・バイブレーション）
+- [x] チュートリアル機能
 
-### 📋 計画中
+#### 音声・フィードバック
+- [x] 効果音（わん！）
+- [x] バイブレーション（ゲーム中）
+- [x] 設定でON/OFF可能
+
+#### iOS対応
+- [x] iOS 13.0+ 対応
+- [x] 実機テスト完了
+- [x] アプリアイコン設定
+- [x] プライバシーポリシー作成
+
+### 🚧 今後の予定
+- [ ] Android実機テスト
+- [ ] App Store申請
 - [ ] 実績システム
 - [ ] リーダーボード
 - [ ] 新しいミニゲーム
-- [ ] カスタマイズ機能
 
 ---
 
@@ -71,7 +88,7 @@
 プロジェクトの概要と基本情報
 
 ### 2. **[APP_SPECIFICATION.md](./APP_SPECIFICATION.md)** ⭐ 必読
-アプリケーションの完全な仕様書
+アプリケーションの完全な仕様書（50ページ）
 - アプリ概要とコンセプト
 - 全機能の詳細仕様
 - UI/UXデザイン
@@ -86,7 +103,7 @@
 - プロダクトマネージャー、デザイナー
 
 ### 3. **[TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** ⭐ 必読
-技術的な詳細ドキュメント
+技術的な詳細ドキュメント（100ページ）
 - 詳細な技術仕様とコード例
 - 開発ルールと設計原則
 - 解決済みエラーと再発防止策（6つの主要エラー）
@@ -100,52 +117,60 @@
 - エラーのトラブルシューティング
 - エンジニア、技術リード
 
-### 4. **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)**
+### 4. **[CODE_REFACTORING_REPORT.md](./CODE_REFACTORING_REPORT.md)** 🆕
+コードリファクタリング報告書
+- 10項目の改善内容
+- バグ修正（3件）
+- パフォーマンス改善（2件）
+- コード品質向上（5件）
+
+### 5. **[PRIVACY_POLICY.md](./PRIVACY_POLICY.md)** 🆕
+プライバシーポリシー（日本語・英語）
+- データ収集・保存について
+- 個人情報の取り扱い
+- ユーザーの権利
+
+### 6. **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)**
 プロジェクト構造と役割定義
 - メイン/サブの役割分担
 - ファイル構成
 - 開発ルール
 
-**こんな人におすすめ**:
-- プロジェクトの構造を理解したい
-- どこに何があるか知りたい
-
-### 5. **[DEVELOPMENT_SUMMARY.md](./DEVELOPMENT_SUMMARY.md)**
+### 7. **[DEVELOPMENT_SUMMARY.md](./DEVELOPMENT_SUMMARY.md)**
 開発サマリー（簡易版）
 - 完成した機能の概要
 - 現在の課題
 - 次のステップ
-
-**こんな人におすすめ**:
-- 手っ取り早く現状を把握したい
-- 進捗確認
 
 ---
 
 ## 🛠️ 技術スタック
 
 - **フレームワーク**: React Native 0.81.4 (Bare workflow)
-- **言語**: TypeScript
+- **言語**: TypeScript (strict mode)
 - **UI**: React Native標準コンポーネント
 - **ジェスチャー**: react-native-gesture-handler
 - **音声**: expo-av
 - **画像**: react-native-svg, PNG/SVG assets
+- **データ保存**: @react-native-async-storage/async-storage
+- **バイブレーション**: React Native Vibration API
 
 ---
 
 ## 💻 開発環境のセットアップ
 
 ### 前提条件
-- Node.js 16.x 以上
+- Node.js 20.x 以上
 - npm または yarn
 - Xcode 14.x 以上（iOS開発）
 - CocoaPods（iOS依存関係管理）
+- iOS 13.0+ デバイスまたはシミュレーター
 
 ### インストール手順
 
 ```bash
 # 1. リポジトリをクローン
-git clone [リポジトリURL]
+git clone https://github.com/enterras017/LongLifeDog.git
 cd LongDogLifeNew
 
 # 2. 依存関係をインストール
@@ -159,8 +184,11 @@ cd ..
 # 4. Metro サーバーを起動
 npx react-native start --reset-cache
 
-# 5. 別のターミナルでiOSアプリを起動
+# 5. 別のターミナルでiOSアプリを起動（シミュレーター）
 npx react-native run-ios --simulator="iPhone 16 Pro"
+
+# または実機で起動
+npx react-native run-ios --device="デバイス名"
 ```
 
 ### トラブルシューティング
@@ -207,7 +235,12 @@ LongDogLifeNew/
 │   │   ├── LongDogHead.tsx         # 頭部コンポーネント
 │   │   ├── LongDogBody.tsx         # 胴体コンポーネント
 │   │   ├── LongDogTail.tsx         # 尻尾コンポーネント
-│   │   └── SnakeGame.tsx           # ご飯ランナー
+│   │   ├── SnakeGame.tsx           # ご飯ランナー
+│   │   ├── Tutorial.tsx            # チュートリアル
+│   │   ├── Settings.tsx            # 設定画面
+│   │   └── experimental/           # 実験的コンポーネント
+│   ├── utils/
+│   │   └── storage.ts              # データ永続化
 │   └── types/
 │       └── svg.d.ts                # SVG型定義
 │
@@ -233,15 +266,23 @@ LongDogLifeNew/
 
 ### メイン画面
 1. **ご飯をあげる**: 「ごはんをあげる」ボタンをタップ
-2. **なでなで**: ながいぬの頭をタップ
+2. **なでなで**: ながいぬの頭をタップ（効果音が鳴ります）
 3. **リセット**: 「リセット」ボタンで初期状態に戻る
+4. **設定**: 左上の⚙️ボタンで設定画面を開く
+5. **ヘルプ**: 右上の？ボタンでチュートリアルを再表示
 
 ### ご飯ランナー
 1. 右上の 🏃‍♂️ ボタンをタップ
 2. 「スタート」ボタンでゲーム開始
 3. スワイプでながいぬを操作
-4. ご飯を集めてスピードアップ
+4. ご飯を集めてスピードアップ（効果音＋バイブレーション）
 5. 壁に当たったらゲームオーバー
+6. ハイスコアは自動保存されます
+
+### 設定画面
+1. **効果音**: ON/OFFで切り替え
+2. **バイブレーション**: ON/OFFで切り替え
+3. **チュートリアルリセット**: 初回チュートリアルを再表示
 
 ---
 
@@ -287,22 +328,32 @@ LongDogLifeNew/
 
 ## 📊 ロードマップ
 
-### Phase 1: 基本機能完成（現在）
+### ✅ Phase 1: MVP完成（2025年11月）
 - [x] メイン機能実装
 - [x] サブゲーム実装
-- [ ] データ永続化
-- [ ] Android対応
+- [x] データ永続化
+- [x] チュートリアル・設定画面
+- [x] 効果音・バイブレーション
+- [x] iOS実機テスト完了
 
-### Phase 2: 機能拡張（3-6ヶ月）
+### 🚧 Phase 2: リリース準備（2025年12月）
+- [ ] Android実機テスト
+- [ ] App Store申請
+- [ ] Google Play申請
+- [ ] マーケティング素材作成
+
+### 📋 Phase 3: 機能拡張（2026年Q1-Q2）
 - [ ] 実績システム
-- [ ] ハイスコアシステム
+- [ ] リーダーボード
 - [ ] 新しいミニゲーム
 - [ ] カスタマイズ機能
+- [ ] 多言語対応
 
-### Phase 3: ソーシャル機能（6-12ヶ月）
-- [ ] リーダーボード
+### 🌟 Phase 4: ソーシャル機能（2026年Q3-Q4）
+- [ ] オンラインランキング
 - [ ] スコアシェア
 - [ ] フレンド機能
+- [ ] デイリーチャレンジ
 
 詳細は [APP_SPECIFICATION.md](./APP_SPECIFICATION.md) の「将来の拡張計画」を参照してください。
 

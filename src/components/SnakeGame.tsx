@@ -8,7 +8,7 @@ import {
   Vibration,
 } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { loadFoodRunnerData, saveFoodRunnerData, type FoodRunnerData, loadSettings, saveSettings } from '../utils/storage';
+import { loadFoodRunnerData, saveFoodRunnerData, type FoodRunnerData, loadSettings } from '../utils/storage';
 import { Audio } from 'expo-av';
 import { Tutorial } from './Tutorial';
 
@@ -41,7 +41,6 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     { x: 5, y: 7 }  // 頭のみ
   ]);
   const [food, setFood] = useState<Position>({ x: 8, y: 5 });
-  const [direction, setDirection] = useState<Direction>('right');
   const [speedLevel, setSpeedLevel] = useState(1);
   const [dogExpression, setDogExpression] = useState<'normal' | 'smile' | 'sad'>('normal');
   const [highScore, setHighScore] = useState(0);
@@ -180,7 +179,7 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
   };
 
   // スネークの移動（useRefを使った実装に変更）
-  const moveSnakeRef = useRef<() => void>();
+  const moveSnakeRef = useRef<(() => void) | undefined>(undefined);
   
   useEffect(() => {
     moveSnakeRef.current = () => {
@@ -335,19 +334,15 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
           // 水平方向のスワイプ
           if (translationX > 0) {
             directionRef.current = 'right';
-            setDirection('right');
           } else {
             directionRef.current = 'left';
-            setDirection('left');
           }
         } else {
           // 垂直方向のスワイプ
           if (translationY > 0) {
             directionRef.current = 'down';
-            setDirection('down');
           } else {
             directionRef.current = 'up';
-            setDirection('up');
           }
         }
       }
@@ -372,7 +367,6 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     const initialSnake = [{ x: 5, y: 7 }];
     setSnake(initialSnake);
     setFood(generateFood(initialSnake));
-    setDirection('right');
     directionRef.current = 'right';
     setSpeedLevel(1);
     speedLevelRef.current = 1;
