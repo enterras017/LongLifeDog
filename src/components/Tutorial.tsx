@@ -25,8 +25,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.emoji}>🍖</Text>
               <Text style={styles.sectionTitle}>ごはんをあげる</Text>
               <Text style={styles.description}>
-                「ごはんをあげる」ボタンを押すと、ながいぬが伸びます！{'\n'}
-                1日3回までごはんをあげられます。
+                ボタンを押すとながいぬが伸びます。1日3回までごはんをあげられます。
               </Text>
             </View>
 
@@ -34,8 +33,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.emoji}>🐕</Text>
               <Text style={styles.sectionTitle}>なでなでする</Text>
               <Text style={styles.description}>
-                ながいぬの頭をタップやスワイプすると喜びます！{'\n'}
-                「わん！」と鳴きます。
+                ながいぬの頭をタップすると喜んで「わん！」と鳴きます。
               </Text>
             </View>
 
@@ -43,8 +41,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.emoji}>😢</Text>
               <Text style={styles.sectionTitle}>お世話を忘れずに</Text>
               <Text style={styles.description}>
-                1日以上ご飯をあげないと悲しい顔になります。{'\n'}
-                毎日お世話してあげましょう！
+                1日以上ご飯をあげないと悲しい顔になります。毎日お世話してあげましょう。
               </Text>
             </View>
 
@@ -52,8 +49,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.emoji}>🐶</Text>
               <Text style={styles.sectionTitle}>あそぶ</Text>
               <Text style={styles.description}>
-                下部の「あそぶ」ボタンからミニゲームで遊べます！{'\n'}
-                ご飯を30個集めるごとに、ご飯をあげる回数が+1されます。
+                ミニゲームで遊べます。ご飯を30個集めるごとに、ごはん回数が1回増えます。
               </Text>
             </View>
 
@@ -61,8 +57,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.emoji}>⚙️</Text>
               <Text style={styles.sectionTitle}>設定</Text>
               <Text style={styles.description}>
-                下部の「設定」ボタンから効果音やバイブレーションの{'\n'}
-                ON/OFFを切り替えられます。
+                効果音やバイブレーションのON/OFFを切り替えられます。
               </Text>
             </View>
           </ScrollView>
@@ -87,17 +82,15 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
             <Text style={styles.emoji}>🎮</Text>
             <Text style={styles.sectionTitle}>ゲーム開始</Text>
             <Text style={styles.description}>
-              「スタート」ボタンを押すと3秒カウントダウン。{'\n'}
-              カウントダウン中にゲーム画面を確認しよう！
+              スタートボタンを押すと3秒カウントダウン。カウントダウン中にゲーム画面を確認できます。
             </Text>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.emoji}>👆</Text>
-            <Text style={styles.sectionTitle}>スワイプで移動</Text>
+            <Text style={styles.sectionTitle}>操作方法</Text>
             <Text style={styles.description}>
-              画面を上下左右にスワイプすると、{'\n'}
-              ながいぬが動きます。
+              画面を上下左右にスワイプしてながいぬを動かします。
             </Text>
           </View>
 
@@ -105,8 +98,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
             <Text style={styles.emoji}>🍖</Text>
             <Text style={styles.sectionTitle}>ご飯を集める</Text>
             <Text style={styles.description}>
-              ご飯に当たるとスピードがアップ！{'\n'}
-              「わん！」と鳴いて振動します。
+              ご飯に当たるとスピードアップ。30個集めるごとにメイン画面のごはん回数が1回増えます。
             </Text>
           </View>
 
@@ -114,8 +106,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
             <Text style={styles.emoji}>🧱</Text>
             <Text style={styles.sectionTitle}>壁に注意</Text>
             <Text style={styles.description}>
-              壁に当たるとゲームオーバー。{'\n'}
-              スピードが上がると難しくなります！
+              壁に当たるとゲームオーバー。スピードが上がると難しくなります。
             </Text>
           </View>
 
@@ -123,8 +114,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
             <Text style={styles.emoji}>🏆</Text>
             <Text style={styles.sectionTitle}>ハイスコア</Text>
             <Text style={styles.description}>
-              最高のスピードレベルが記録されます。{'\n'}
-              どこまで速くなれるかな？
+              最高のスピードレベルが自動的に記録されます。
             </Text>
           </View>
         </ScrollView>
@@ -197,8 +187,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#666',
     textAlign: 'center',
-    lineHeight: 22,
-    paddingHorizontal: 10,
+    lineHeight: 24,
+    paddingHorizontal: 20,
   },
   closeButton: {
     backgroundColor: '#4CAF50',
