@@ -228,11 +228,6 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
         if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
           setGameState('gameOver');
           setDogExpression('sad');
-          loadSettings().then(settings => {
-            if (settings.vibrationEnabled) {
-              Vibration.vibrate([0, 200, 100, 200]); // パターン振動
-            }
-          });
           return prevSnake;
         }
 
@@ -352,11 +347,6 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
 
   // ゲームスタート（カウントダウン付き）
   const startGame = async () => {
-    const settings = await loadSettings();
-    if (settings.vibrationEnabled) {
-      Vibration.vibrate(50); // 軽い振動
-    }
-    
     // カウントダウン開始
     setCountdown(3);
     
@@ -468,8 +458,8 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
         </View>
       </PanGestureHandler>
 
-      {/* スタート画面 */}
-      {gameState === 'ready' && (
+      {/* スタート画面（カウントダウン中は非表示） */}
+      {gameState === 'ready' && countdown === null && (
         <View style={styles.startOverlay}>
           <Text style={styles.gameTitle}>ご飯ランナー</Text>
           <Text style={styles.startInstructionText}>スワイプで移動してご飯を集めよう！</Text>
@@ -628,18 +618,19 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100,
+    pointerEvents: 'none',
   },
   countdownText: {
     fontSize: 120,
     fontWeight: 'bold',
     color: 'white',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 15,
   },
   gameOverOverlay: {
     position: 'absolute',
