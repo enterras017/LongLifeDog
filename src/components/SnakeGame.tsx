@@ -8,7 +8,7 @@ import {
   Vibration,
 } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { loadFoodRunnerData, saveFoodRunnerData, type FoodRunnerData, loadSettings } from '../utils/storage';
+import { loadFoodRunnerData, saveFoodRunnerData, type FoodRunnerData, loadSettings, loadMainData, saveMainData, type MainData } from '../utils/storage';
 import { Audio } from 'expo-av';
 import { Tutorial } from './Tutorial';
 
@@ -239,6 +239,32 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
           setSpeedLevel(prev => prev + 1); // スピードレベルを上げる
           foodCollectedThisGame.current += 1; // ご飯を集めた数をカウント
           setDogExpression('smile');
+          
+          // メインデータを更新（ご飯ランナーで集めたご飯をカウント）
+          loadMainData().then(async (mainData) => {
+            const newFoodCollected = (mainData.foodRunnerFoodCollected || 0) + 1;
+            const lastCheck = mainData.lastFoodRunnerRewardCheck || 0;
+            
+            // 30個ごとにご飯回数を増やす
+            const newRewards = Math.floor(newFoodCollected / 30);
+            const rewardsToAdd = newRewards - Math.floor(lastCheck / 30);
+            
+            if (rewardsToAdd > 0) {
+              const updatedMainData: MainData = {
+                ...mainData,
+                foodRunnerFoodCollected: newFoodCollected,
+                lastFoodRunnerRewardCheck: newFoodCollected,
+                remainingFeeds: mainData.remainingFeeds + rewardsToAdd,
+              };
+              await saveMainData(updatedMainData);
+            } else {
+              const updatedMainData: MainData = {
+                ...mainData,
+                foodRunnerFoodCollected: newFoodCollected,
+              };
+              await saveMainData(updatedMainData);
+            }
+          });
           
           // 効果音 + バイブレーション
           playSound();

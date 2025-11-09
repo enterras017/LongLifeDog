@@ -11,13 +11,21 @@ const STORAGE_KEYS = {
 // メインデータの型定義
 export interface MainData {
   bodyCount: number;
-  feedCount: number;
+  feedCount: number; // 今日のご飯回数
   remainingFeeds: number;
   lastFeedDate: string | null;
-  totalPetCount: number;
+  totalPetCount: number; // 今日の撫でた回数
   totalPlayTime: number;
   createdAt: string;
   lastPlayedAt: string;
+  // 累計統計（派生用パラメータ）
+  totalFeedCount: number; // 累計ご飯回数
+  totalPetCountAllTime: number; // 累計撫でた回数
+  consecutiveFeedDays: number; // 連続ご飯日数
+  maxConsecutiveFeedDays: number; // 最大連続ご飯日数
+  sadFaceCount: number; // 悲しい顔になった回数（放置回数）
+  foodRunnerFoodCollected: number; // ご飯ランナーで集めたご飯の累計
+  lastFoodRunnerRewardCheck: number; // 最後にご飯ランナー報酬をチェックした回数
 }
 
 // ご飯ランナーデータの型定義
@@ -39,12 +47,20 @@ export interface SettingsData {
 const DEFAULT_MAIN_DATA: MainData = {
   bodyCount: 1,
   feedCount: 0,
-  remainingFeeds: 100,
+  remainingFeeds: 3,
   lastFeedDate: null,
   totalPetCount: 0,
   totalPlayTime: 0,
   createdAt: new Date().toISOString(),
   lastPlayedAt: new Date().toISOString(),
+  // 累計統計
+  totalFeedCount: 0,
+  totalPetCountAllTime: 0,
+  consecutiveFeedDays: 0,
+  maxConsecutiveFeedDays: 0,
+  sadFaceCount: 0,
+  foodRunnerFoodCollected: 0,
+  lastFoodRunnerRewardCheck: 0,
 };
 
 const DEFAULT_FOOD_RUNNER_DATA: FoodRunnerData = {

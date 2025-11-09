@@ -11,9 +11,10 @@ import { loadSettings, saveSettings, type SettingsData } from '../utils/storage'
 
 interface SettingsProps {
   onClose: () => void;
+  onShowTutorial?: () => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
+export const Settings: React.FC<SettingsProps> = ({ onClose, onShowTutorial }) => {
   const [settings, setSettings] = useState<SettingsData>({
     soundEnabled: true,
     vibrationEnabled: true,
@@ -40,11 +41,11 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     await saveSettings(newSettings);
   };
 
-  const handleResetTutorial = async () => {
-    const newSettings = { ...settings, tutorialCompleted: false };
-    setSettings(newSettings);
-    await saveSettings(newSettings);
-    alert('チュートリアルをリセットしました。\nアプリを再起動すると表示されます。');
+  const handleShowTutorial = () => {
+    onClose();
+    if (onShowTutorial) {
+      onShowTutorial();
+    }
   };
 
   return (
@@ -93,16 +94,16 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>チュートリアル</Text>
+            <Text style={styles.sectionTitle}>ヘルプ</Text>
             
             <TouchableOpacity
-              style={styles.resetButton}
-              onPress={handleResetTutorial}
+              style={styles.tutorialButton}
+              onPress={handleShowTutorial}
             >
-              <Text style={styles.resetButtonText}>チュートリアルをリセット</Text>
+              <Text style={styles.tutorialButtonText}>チュートリアルを表示</Text>
             </TouchableOpacity>
-            <Text style={styles.resetDescription}>
-              初回起動時のチュートリアルを再度表示します
+            <Text style={styles.tutorialDescription}>
+              アプリの使い方を確認できます
             </Text>
           </View>
 
@@ -201,20 +202,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#666',
   },
-  resetButton: {
-    backgroundColor: '#FF6B6B',
+  tutorialButton: {
+    backgroundColor: '#4CAF50',
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 20,
     alignItems: 'center',
     marginBottom: 8,
   },
-  resetButtonText: {
+  tutorialButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  resetDescription: {
+  tutorialDescription: {
     fontSize: 13,
     color: '#666',
     textAlign: 'center',

@@ -42,7 +42,11 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
         const data = await loadMainData();
         setBodyCount(data.bodyCount);
         setFeedCount(data.feedCount);
-        setRemainingFeeds(data.remainingFeeds);
+        
+        // 既存データが100回の場合は3回に修正
+        const fixedRemainingFeeds = data.remainingFeeds > 10 ? 3 : data.remainingFeeds;
+        setRemainingFeeds(fixedRemainingFeeds);
+        
         setLastFeedDate(data.lastFeedDate);
         setTotalPetCount(data.totalPetCount);
 
@@ -54,6 +58,13 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
           
           if (daysDiff >= 1) {
             setDogExpression('sad');
+            // 悲しい顔になった回数をカウント（初回のみ）
+            const updatedData: MainData = {
+              ...data,
+              sadFaceCount: (data.sadFaceCount || 0) + 1,
+              lastPlayedAt: new Date().toISOString(),
+            };
+            await saveMainData(updatedData);
           }
         }
 
@@ -77,6 +88,9 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
     if (isLoading) return; // 初回読み込み中は保存しない
 
     const saveData = async () => {
+      // 既存データを読み込んで累計統計を保持
+      const existingData = await loadMainData();
+      
       const data: MainData = {
         bodyCount,
         feedCount,
@@ -84,8 +98,16 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
         lastFeedDate,
         totalPetCount,
         totalPlayTime: Math.floor((Date.now() - mountTimeRef.current) / 1000),
-        createdAt: new Date().toISOString(), // 既存データがあればそのまま
+        createdAt: existingData.createdAt, // 既存の作成日時を保持
         lastPlayedAt: new Date().toISOString(),
+        // 累計統計を保持
+        totalFeedCount: existingData.totalFeedCount || 0,
+        totalPetCountAllTime: existingData.totalPetCountAllTime || 0,
+        consecutiveFeedDays: existingData.consecutiveFeedDays || 0,
+        maxConsecutiveFeedDays: existingData.maxConsecutiveFeedDays || 0,
+        sadFaceCount: existingData.sadFaceCount || 0,
+        foodRunnerFoodCollected: existingData.foodRunnerFoodCollected || 0,
+        lastFoodRunnerRewardCheck: existingData.lastFoodRunnerRewardCheck || 0,
       };
 
       await saveMainData(data);
@@ -116,7 +138,7 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
     };
   }, []);
 
-  const handleFeed = () => {
+  const handleFeed = async () => {
     if (remainingFeeds > 0) {
       // 表情を笑顔に変更
       setDogExpression('smile');
@@ -125,6 +147,19 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
       setBodyCount(prev => prev + segmentIncrement);
       setFeedCount(prev => prev + 1);
       setRemainingFeeds(prev => prev - 1);
+      
+      // 累計統計を更新
+      const existingData = await loadMainData();
+      const updatedData: MainData = {
+        ...existingData,
+        bodyCount: bodyCount + segmentIncrement,
+        feedCount: feedCount + 1,
+        remainingFeeds: remainingFeeds - 1,
+        totalFeedCount: (existingData.totalFeedCount || 0) + 1,
+        lastFeedDate: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`,
+        lastPlayedAt: new Date().toISOString(),
+      };
+      await saveMainData(updatedData);
       
       // フェードアニメーション
       Animated.sequence([
@@ -155,6 +190,16 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
     
     setDogExpression('smile');
     setTotalPetCount(prev => prev + 1); // なでなで回数をカウント
+
+    // 累計統計を更新
+    const existingData = await loadMainData();
+    const updatedData: MainData = {
+      ...existingData,
+      totalPetCount: totalPetCount + 1,
+      totalPetCountAllTime: (existingData.totalPetCountAllTime || 0) + 1,
+      lastPlayedAt: new Date().toISOString(),
+    };
+    await saveMainData(updatedData);
 
     // 設定を確認して効果音を再生
     const settings = await loadSettings();
@@ -231,6 +276,12 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
     await saveSettings({ ...settings, tutorialCompleted: true });
   };
 
+  // ご飯ランナーから戻った時にデータを再読み込み
+  const reloadData = async () => {
+    const data = await loadMainData();
+    setRemainingFeeds(data.remainingFeeds);
+  };
+
   // ローディング中
   if (isLoading) {
     return (
@@ -246,7 +297,15 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
       {showTutorial && <Tutorial type="main" onClose={handleCloseTutorial} />}
       
       {/* 設定 */}
-      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+      {showSettings && (
+        <Settings 
+          onClose={() => setShowSettings(false)} 
+          onShowTutorial={() => {
+            setShowSettings(false);
+            setShowTutorial(true);
+          }}
+        />
+      )}
 
       {/* タイトルバー */}
       <View style={styles.statusBar}>
@@ -296,7 +355,7 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
         </Text>
       </View>
 
-      {/* 設定・ご飯ランナー・ヘルプボタン */}
+      {/* 設定・あそぶ・進化ボタン */}
       <View style={styles.bottomButtons}>
         <TouchableOpacity 
           style={styles.bottomButton} 
@@ -314,13 +373,16 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
             <Text style={styles.bottomButtonText}>あそぶ</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity 
-          style={styles.bottomButton} 
-          onPress={() => setShowTutorial(true)}
-        >
-          <Text style={styles.bottomButtonIcon}>？</Text>
-          <Text style={styles.bottomButtonText}>ヘルプ</Text>
-        </TouchableOpacity>
+        {/* 進化ボタン（条件達成時のみ表示） */}
+        {false && ( // TODO: 進化条件を実装
+          <TouchableOpacity 
+            style={[styles.bottomButton, styles.evolutionButton]} 
+            onPress={() => {/* TODO: 進化処理 */}}
+          >
+            <Text style={styles.bottomButtonIcon}>✨</Text>
+            <Text style={styles.bottomButtonText}>進化</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -469,6 +531,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     fontWeight: '500',
+  },
+  evolutionButton: {
+    backgroundColor: '#FFD700',
+    shadowColor: '#FFD700',
+    shadowOpacity: 0.3,
   },
 });
 

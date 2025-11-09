@@ -26,7 +26,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.sectionTitle}>ごはんをあげる</Text>
               <Text style={styles.description}>
                 「ごはんをあげる」ボタンを押すと、ながいぬが伸びます！{'\n'}
-                1日100回までごはんをあげられます。
+                1日3回までごはんをあげられます。
               </Text>
             </View>
 
@@ -35,25 +35,34 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.sectionTitle}>なでなでする</Text>
               <Text style={styles.description}>
                 ながいぬの頭をタップやスワイプすると喜びます！{'\n'}
-                「わん！」と鳴いて、しっぽを振ります。
+                「わん！」と鳴きます。
               </Text>
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.emoji}>🏃‍♂️</Text>
-              <Text style={styles.sectionTitle}>ご飯ランナー</Text>
+              <Text style={styles.emoji}>😢</Text>
+              <Text style={styles.sectionTitle}>お世話を忘れずに</Text>
               <Text style={styles.description}>
-                右上のボタンからミニゲームで遊べます！{'\n'}
-                ご飯を集めてハイスコアを目指そう。
+                1日以上ご飯をあげないと悲しい顔になります。{'\n'}
+                毎日お世話してあげましょう！
               </Text>
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.emoji}>💾</Text>
-              <Text style={styles.sectionTitle}>データ保存</Text>
+              <Text style={styles.emoji}>🐶</Text>
+              <Text style={styles.sectionTitle}>あそぶ</Text>
               <Text style={styles.description}>
-                ながいぬの長さやハイスコアは自動的に保存されます。{'\n'}
-                アプリを閉じても安心！
+                下部の「あそぶ」ボタンからミニゲームで遊べます！{'\n'}
+                ご飯を30個集めるごとに、ご飯をあげる回数が+1されます。
+              </Text>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.emoji}>⚙️</Text>
+              <Text style={styles.sectionTitle}>設定</Text>
+              <Text style={styles.description}>
+                下部の「設定」ボタンから効果音やバイブレーションの{'\n'}
+                ON/OFFを切り替えられます。
               </Text>
             </View>
           </ScrollView>
@@ -74,6 +83,15 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
           <Text style={styles.title}>ご飯ランナー</Text>
           <Text style={styles.subtitle}>遊び方</Text>
           
+          <View style={styles.section}>
+            <Text style={styles.emoji}>🎮</Text>
+            <Text style={styles.sectionTitle}>ゲーム開始</Text>
+            <Text style={styles.description}>
+              「スタート」ボタンを押すと3秒カウントダウン。{'\n'}
+              カウントダウン中にゲーム画面を確認しよう！
+            </Text>
+          </View>
+
           <View style={styles.section}>
             <Text style={styles.emoji}>👆</Text>
             <Text style={styles.sectionTitle}>スワイプで移動</Text>

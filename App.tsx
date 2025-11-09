@@ -12,6 +12,7 @@ type AppMode = 'main' | 'foodRunner';
 
 function App(): React.JSX.Element {
   const [appMode, setAppMode] = useState<AppMode>('main');
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const switchToFoodRunner = () => {
     setAppMode('foodRunner');
@@ -19,6 +20,7 @@ function App(): React.JSX.Element {
 
   const switchToMain = () => {
     setAppMode('main');
+    setRefreshKey(prev => prev + 1); // LongDogを再マウントしてデータをリロード
   };
 
   return (
@@ -26,7 +28,7 @@ function App(): React.JSX.Element {
     <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#87CEEB" />
         {appMode === 'main' ? (
-          <LongDog onSwitchToSnake={switchToFoodRunner} />
+          <LongDog key={refreshKey} onSwitchToSnake={switchToFoodRunner} />
         ) : (
           <FoodRunner onBackToMain={switchToMain} />
         )}
