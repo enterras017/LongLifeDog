@@ -237,28 +237,14 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
       {/* 設定 */}
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}
 
-      {/* ステータスバーエリア */}
+      {/* タイトルバー */}
       <View style={styles.statusBar}>
-        <TouchableOpacity 
-          style={styles.settingsButton} 
-          onPress={() => setShowSettings(true)}
-        >
-          <Text style={styles.settingsButtonText}>⚙️</Text>
-        </TouchableOpacity>
         <Text style={styles.title}>ながいぬのいる生活</Text>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity 
-            style={styles.helpButton} 
-            onPress={() => setShowTutorial(true)}
-          >
-            <Text style={styles.helpButtonText}>？</Text>
+        {onSwitchToSnake && (
+          <TouchableOpacity style={styles.snakeButton} onPress={onSwitchToSnake}>
+            <Text style={styles.snakeButtonText}>🏃‍♂️</Text>
           </TouchableOpacity>
-          {onSwitchToSnake && (
-            <TouchableOpacity style={styles.snakeButton} onPress={onSwitchToSnake}>
-              <Text style={styles.snakeButtonText}>🏃‍♂️</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        )}
       </View>
       
       <ScrollView 
@@ -303,6 +289,24 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
           最後のごはん: {lastFeedDate || 'まだ'}
         </Text>
       </View>
+
+      {/* 設定・ヘルプボタン */}
+      <View style={styles.bottomButtons}>
+        <TouchableOpacity 
+          style={styles.bottomButton} 
+          onPress={() => setShowTutorial(true)}
+        >
+          <Text style={styles.bottomButtonIcon}>？</Text>
+          <Text style={styles.bottomButtonText}>ヘルプ</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.bottomButton} 
+          onPress={() => setShowSettings(true)}
+        >
+          <Text style={styles.bottomButtonIcon}>⚙️</Text>
+          <Text style={styles.bottomButtonText}>設定</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -325,57 +329,18 @@ const styles = StyleSheet.create({
   },
   statusBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     marginBottom: 20,
-    paddingHorizontal: 5,
+    paddingHorizontal: 10,
+    position: 'relative',
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  settingsButton: {
-    backgroundColor: '#2196F3',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  settingsButtonText: {
-    fontSize: 20,
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  helpButton: {
-    backgroundColor: '#4CAF50',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  helpButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
   },
   snakeButton: {
     backgroundColor: '#FF6B6B',
@@ -389,6 +354,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
+    position: 'absolute',
+    right: 10,
   },
   snakeButtonText: {
     fontSize: 18,
@@ -473,11 +440,40 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     alignItems: 'center',
+    marginBottom: 20,
   },
   statsText: {
     fontSize: 16,
     color: '#666',
     marginBottom: 5,
+  },
+  bottomButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    width: '100%',
+  },
+  bottomButton: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 15,
+    minWidth: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  bottomButtonIcon: {
+    fontSize: 24,
+    marginBottom: 5,
+  },
+  bottomButtonText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
   },
 });
 
