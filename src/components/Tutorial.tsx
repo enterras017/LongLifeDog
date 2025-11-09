@@ -33,7 +33,7 @@ export const Tutorial: React.FC<TutorialProps> = ({ onClose, type }) => {
               <Text style={styles.emoji}>🐕</Text>
               <Text style={styles.sectionTitle}>なでなでする</Text>
               <Text style={styles.description}>
-                ながいぬの頭をタップすると喜んで「わん！」と鳴きます。
+                ながいぬの頭をスワイプすると喜んで「わん！」と鳴きます。
               </Text>
             </View>
 
