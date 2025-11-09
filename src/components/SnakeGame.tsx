@@ -390,16 +390,10 @@ export const FoodRunner: React.FC<FoodRunnerProps> = ({ onBackToMain }) => {
     let cellContent = null;
 
     if (isSnakeHead) {
-      // 頭の画像（表情に応じて変更）
-      const headImage = dogExpression === 'smile' 
-        ? require('../../assets/simple/longdog_head_smile.png')
-        : dogExpression === 'sad'
-        ? require('../../assets/simple/longdog_head_sad.png')
-        : require('../../assets/simple/longdog.png');
-      
+      // ながいぬの画像（常に同じ）
       cellContent = (
         <Animated.Image
-          source={headImage}
+          source={require('../../assets/simple/longdog.png')}
           style={[styles.cellImage, { opacity: fadeAnim }]}
           resizeMode="contain"
         />
