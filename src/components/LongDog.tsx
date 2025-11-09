@@ -240,11 +240,6 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
       {/* タイトルバー */}
       <View style={styles.statusBar}>
         <Text style={styles.title}>ながいぬのいる生活</Text>
-        {onSwitchToSnake && (
-          <TouchableOpacity style={styles.snakeButton} onPress={onSwitchToSnake}>
-            <Text style={styles.snakeButtonText}>🏃‍♂️</Text>
-          </TouchableOpacity>
-        )}
       </View>
       
       <ScrollView 
@@ -290,21 +285,30 @@ const LongDog: React.FC<LongDogProps> = ({ onSwitchToSnake }) => {
         </Text>
       </View>
 
-      {/* 設定・ヘルプボタン */}
+      {/* 設定・ご飯ランナー・ヘルプボタン */}
       <View style={styles.bottomButtons}>
-        <TouchableOpacity 
-          style={styles.bottomButton} 
-          onPress={() => setShowTutorial(true)}
-        >
-          <Text style={styles.bottomButtonIcon}>？</Text>
-          <Text style={styles.bottomButtonText}>ヘルプ</Text>
-        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.bottomButton} 
           onPress={() => setShowSettings(true)}
         >
           <Text style={styles.bottomButtonIcon}>⚙️</Text>
           <Text style={styles.bottomButtonText}>設定</Text>
+        </TouchableOpacity>
+        {onSwitchToSnake && (
+          <TouchableOpacity 
+            style={styles.bottomButton} 
+            onPress={onSwitchToSnake}
+          >
+            <Text style={styles.bottomButtonIcon}>🏃‍♂️</Text>
+            <Text style={styles.bottomButtonText}>ご飯ランナー</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity 
+          style={styles.bottomButton} 
+          onPress={() => setShowTutorial(true)}
+        >
+          <Text style={styles.bottomButtonIcon}>？</Text>
+          <Text style={styles.bottomButtonText}>ヘルプ</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -328,37 +332,15 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   statusBar: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',
     marginBottom: 20,
     paddingHorizontal: 10,
-    position: 'relative',
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
-  },
-  snakeButton: {
-    backgroundColor: '#FF6B6B',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-    position: 'absolute',
-    right: 10,
-  },
-  snakeButtonText: {
-    fontSize: 18,
   },
   scrollView: {
     height: 200, // 固定の高さ
@@ -450,16 +432,18 @@ const styles = StyleSheet.create({
   bottomButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: 15,
     width: '100%',
+    paddingHorizontal: 10,
   },
   bottomButton: {
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     backgroundColor: '#f5f5f5',
     borderRadius: 15,
-    minWidth: 100,
+    flex: 1,
+    maxWidth: 110,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
