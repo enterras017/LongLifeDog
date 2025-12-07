@@ -8,5 +8,8 @@ export function snapToPixel(value: number): number {
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> d2d1bd14458db03eb1a31dece82cf0cac46a607d
